@@ -10,34 +10,27 @@ class SfOpticon::IntegrationBranch < ActiveRecord::Base
     :post_merge_commit_id,
     :is_deployed
 
-  belongs_to :environment
+  # source_env is the environment's branch we're merging into THIS branch
+  belongs_to :source_env, class_name: 'SfOpticon::Environment'
+
+  # dest_env is what we're branched FROM
+  belongs_to :dest_env, class_name: => 'SfOpticon::Environment'
 
   after_initialize do |branch|
     @log = SfOpticon::Logger
-    init
   end
 
   # If this is the creation of the branch then we want to clone
   # the remote repository, create the branch, and check it out.
   after_create do |branch|
-    if Dir.exist? local_path
-      FileUtils.remove_entry_secure(local_path)
-    end
-    @local_path = environment.branch.local_path
-    make_integration_branch(branch.environment)
+    @local_path = dest_env.branch.local_path
+    make_integration_branch
   end
 
-  ##
-  # Handles deletion including the directory removal
-  def delete
-    FileUtils.remove_entry_secure(local_path)
-    super
-  end
-
-  def integrate(src_env)
+  def integrate
     # We have to update the source branch so it gets the ref of the newly 
     # created integration branch
-    update_branch(src_env.branch.name)
+    update_branch(source_env.branch.name)
 
     self.pre_merge_commit_id  = checkout(name)
     self.post_merge_commit_id = merge(src_env.branch.name)

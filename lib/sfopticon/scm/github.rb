@@ -45,10 +45,13 @@ module SfOpticon::Scm::Github
     end
   end
 
+  def git
+    @git ||= Git.open(environment.branch.local_path)
+  end    
+
   ##
   # Switches us to a branch
   def checkout(branch)
-    git = Git.open(environment.branch.local_path)
     git.checkout(branch)
 
     # Return the commit id of what we just checked out
@@ -58,7 +61,6 @@ module SfOpticon::Scm::Github
   ##
   # Creates a tag
   def add_tag(text)
-    git = Git.open(environment.branch.local_path)
     git.add_tag(text)
   end
 
@@ -95,14 +97,8 @@ module SfOpticon::Scm::Github
   # branch and will be a destination for merging from some other branch.
   # It is from these branches that manifests will be generated and
   # deployed.
-  #
-  # @param env_name [String] The name of the environment that we'll
-  #    be merging into this integration branch
-  # @return [String] The name of the integration branch
-  def make_integration_branch(dest_env)
-    # First just ensure that we're on the correct branch
-    #make_branch
-    @git = Git.open(dest_env.branch.local_path)
+  def make_integration_branch
+    checkout('master')
     git.branch(name).checkout
   end
 
@@ -132,7 +128,6 @@ module SfOpticon::Scm::Github
   # @param message [String] The merge messager (optional)
   # @return [String] The commit-id of the merge 
   def merge(branch = 'master', message = nil)
-    git = Git.open(environment.branch.local_path)
     log.info { "Merging branch #{branch} into #{git.current_branch}"}
     merge_result = git.merge(branch, "Merged from #{branch}")
     log.info { "Merge result: #{merge_result}" }

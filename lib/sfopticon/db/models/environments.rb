@@ -16,7 +16,7 @@ class SfOpticon::Environment < ActiveRecord::Base
 
   has_many :sf_objects
   has_one  :branch
-  has_one  :integration_branch
+  has_one  :integration_branch, :foreign_key => :dest_env_id
 
   # Setup variables
   after_initialize do |env|
@@ -87,7 +87,7 @@ class SfOpticon::Environment < ActiveRecord::Base
     # Generate a unique branch name, and create the branch
     timestamp = DateTime.now.strftime("%Y%m%d%H%M%S")
     int_branch_name = "Integration_#{src_env.name}_to_#{name}_#{timestamp}"
-    create_integration_branch(source_env: src_env.id, dest_env: id, name: int_branch_name)
+    create_integration_branch(source_env: src_env, dest_env: id, name: int_branch_name)
     
     integration_branch.integrate(src_env)
 

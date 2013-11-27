@@ -34,8 +34,8 @@ ActiveRecord::Schema.define(version: 20131114232620) do
 
   create_table "integration_branches", force: true do |t|
     t.string   "name",                                 null: false
-    t.integer  "source_env",                           null: false
-    t.integer  "dest_env",                             null: false
+    t.integer  "source_env_id",                        null: false
+    t.integer  "dest_env_id",                          null: false
     t.boolean  "is_deployed",          default: false
     t.datetime "created_at"
     t.datetime "updated_at"
