@@ -65,6 +65,7 @@ class EnvironmentCLI < Thor
   end
 
   option :org, :type => :string, :required => true
+  option :force, :type => :boolean, :required => false
   desc "delete", "Deletes the Salesforce organization from the database"
   def delete
     env = SfOpticon::Environment.find_by_name(options[:org])
@@ -83,22 +84,30 @@ class EnvironmentCLI < Thor
           .flatten
           .compact
     end
+    
+    unless options[:force]
+      print "Are you sure you want to delete #{env.name}? [yn]: "
+      answer = STDIN.getc
 
-    print "Are you sure you want to delete #{env.name}? [yn]: "
-    answer = STDIN.getc
-
-    if answer.downcase == "y"
-      env_list.each do |se|
-        puts "Deleting #{se.name}... "
-        puts ""
-        se.remove
-        puts ""
+      if answer.downcase == "n"
+        puts "Delete aborted."
+        exit
+       # env_list.each do |se|
+       #   puts "Deleting #{se.name}... "
+       #   puts ""
+       #   se.remove
+       #   puts ""
+       # end
+      elsif answer.downcase != "y"
+        puts "Invalid answer!"
+        exit
       end
-    elsif answer.downcase == "n"
-      puts "Skipping."
-    else
-      puts "Invalid answer!"
-      exit
+    end
+    env_list.each do |se|
+      puts "Deleting #{se.name}..."
+      puts ""
+      se.remove
+      puts ""
     end
   end
 

@@ -234,8 +234,8 @@ class SfOpticon::Environment < ActiveRecord::Base
     sforce.retrieve(:manifest => sforce.manifest(mods), :extract_to => dir)
 
     # Now we replay the changes into the repo and the database
-    diff.each do |change|
-      log.info { "DIFF: #{change[:type]} - #{change[:object][:full_name]}" }
+    change_queue.apply_change_queue(dir, branch.local_path) do |change|
+      log.info { "DIFF: #{change.change_type} - #{change.sf_object[:full_name]}" }
 
       commit_message = "#{change[:type].to_s.capitalize} - #{change[:object][:full_name]}\n\n"
       if change[:type] == :delete
