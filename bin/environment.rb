@@ -62,6 +62,7 @@ class EnvironmentCLI < Thor
     puts "   Username: #{env.username}"
     puts "   Password: #{env.password}"
     puts " Production: #{env.production}"
+	puts "     Locked: #{env.locked}"
   end
 
   option :org, :type => :string, :required => true
