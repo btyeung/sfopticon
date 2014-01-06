@@ -210,7 +210,7 @@ module SfOpticon::Scm::Github
       git.config('user.email', author_email)
     end
 
-    git.commit(message, :allow_empty => true)
+    git.commit(message, :allow_empty => false)
   end
 
   ##
