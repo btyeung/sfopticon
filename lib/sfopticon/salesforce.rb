@@ -15,7 +15,7 @@ class SfOpticon::Salesforce
     Metaforce.configure do |c|
       c.host = env.host
       c.log = false 
-      c.api_version = '29.0'
+      c.api_version = '31.0'
       log.debug { "Host configured to #{c.host}"}
     end
   end
