@@ -63,7 +63,7 @@ class SfOpticon::Salesforce
             # an can be greedy about our regex because salesforce won't allow you
             # to name an object with a double-underscore. So this is always some
             # internal object that's unretrievable.
-            if rec[:full_name] =~ /^.*?__hd/
+            if rec[:full_name] =~ /^.*?__hd/ or rec[:full_name] =~ /^.*?__c_hd/
               log.info { "Skipping item #{rec[:full_name]}" }
             else
               @sfobjects << mg.map_fields_from_sf(rec)
