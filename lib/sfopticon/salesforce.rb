@@ -65,9 +65,9 @@ class SfOpticon::Salesforce
             # internal object that's unretrievable.
             if rec[:full_name] =~ /^.*?__hd/
               log.info { "Skipping item #{rec[:full_name]}" }
-              next
+            else
+              @sfobjects << mg.map_fields_from_sf(rec)
             end
-            @sfobjects << mg.map_fields_from_sf(rec)
           end
         end
       rescue => e
