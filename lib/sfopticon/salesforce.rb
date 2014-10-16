@@ -59,6 +59,14 @@ class SfOpticon::Salesforce
         records.map! {|x| x.symbolize_keys }
         records.each do |rec|
           if rec.include?(:full_name) and rec.include?(:last_modified_date)
+            # We need to avoid types with a suffix of "__hd"
+            # an can be greedy about our regex because salesforce won't allow you
+            # to name an object with a double-underscore. So this is always some
+            # internal object that's unretrievable.
+            if rec[:full_name] =~ /^.*?__hd/
+              log.info { "Skipping item #{rec[:full_name]}" }
+              next
+            end
             @sfobjects << mg.map_fields_from_sf(rec)
           end
         end
